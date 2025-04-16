@@ -13,16 +13,24 @@ class TwoFactorAuthController extends Controller
         $tfa = new TwoFactorAuth('laravel5');
         $user = auth()->user();
 
-        // Generate secret
-        $secret = $tfa->createSecret();
-        $user->google2fa_secret = $secret;
-        $user->save();
+        // Only generate a new secret if the user doesn't already have one
+        if (!$user->google2fa_secret) {
+            $user->google2fa_secret = $tfa->createSecret();
+            $user->save();
+        }
 
-        // Generate QR Code
-        $qrCodeUrl = $tfa->getQRCodeImageAsDataUri('laravel5 (' . $user->email . ')', $secret);
+        // Generate QR Code based on the *existing* secret
+        $qrCodeUrl = $tfa->getQRCodeImageAsDataUri(
+            'laravel5 (' . $user->email . ')',
+            $user->google2fa_secret
+        );
 
-        return view('2fa.setup', compact('qrCodeUrl', 'secret'));
+        return view('2fa.setup', [
+            'qrCodeUrl' => $qrCodeUrl,
+            'secret' => $user->google2fa_secret,
+        ]);
     }
+
 
 
     public function verify2FA(Request $request)
