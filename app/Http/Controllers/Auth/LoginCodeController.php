@@ -66,8 +66,14 @@ class LoginCodeController extends Controller
         $user->save();
 
         // send email
-        Mail::raw("New login verification code is: $code", function ($message) use ($user) {
-            $message->to($user->email)->subject('New Login Verification Code');
+        // Mail::raw("New login verification code is: $code", function ($message) use ($user) {
+        //     $message->to($user->email)->subject('New Login Verification Code');
+        // });
+
+        Mail::send("email.verification_code", [
+            "code" => $code
+        ], function ($message) use ($user){
+            $message->to($user->email)->subject("New Login Verification Code");
         });
 
         return back()->with('success', 'A new code has been sent to your email.');

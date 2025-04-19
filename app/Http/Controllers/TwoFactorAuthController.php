@@ -20,10 +20,15 @@ class TwoFactorAuthController extends Controller
         }
 
         // Generate QR Code based on the *existing* secret
-        $qrCodeUrl = $tfa->getQRCodeImageAsDataUri(
-            'laravel5 (' . $user->email . ')',
-            $user->google2fa_secret
-        );
+        $qrCodeUrl = false;
+
+        if (!$user->is_2fa_enabled){
+
+            $qrCodeUrl = $tfa->getQRCodeImageAsDataUri(
+                'laravel5 (' . $user->email . ')',
+                $user->google2fa_secret
+            );
+        }
 
         return view('2fa.setup', [
             'qrCodeUrl' => $qrCodeUrl,
@@ -42,6 +47,12 @@ class TwoFactorAuthController extends Controller
         $secret = $user->google2fa_secret;
 
         if ($tfa->verifyCode($secret, $request->code)) {
+            // mark it as enabled if not
+            if (!$user->is_2fa_enabled){
+
+                $user->is_2fa_enabled = true;
+                $user->save();
+            }
             session(['2fa_passed' => true]);
             return redirect('/home')->with('success', '2FA verified!');
         }
