@@ -13,7 +13,7 @@ class LoginCodeController extends Controller
 {
     public function showForm()
     {
-        if (!auth()->guest())
+        if (!auth()->guest() || !session('login.id'))
         {
             return redirect("/home");
         }

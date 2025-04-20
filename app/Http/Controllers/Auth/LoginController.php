@@ -44,8 +44,9 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         try{
-                //logout
-                auth()->logout();
+
+            //logout
+            auth()->logout();
             // generate the code
             $code = rand(10000,90000);
             // affect the code to the user
@@ -77,7 +78,6 @@ class LoginController extends Controller
         }catch(Exception $e){
             //logout
             auth()->logout();
-
             throw $e;
         }
 
