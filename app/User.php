@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','login_code', 'code_expires_at'
+        'name', 'email', 'password','login_code', 'code_expires_at', 'is_2fa_enabled','google2fa_secret'
     ];
 
     /**
@@ -26,6 +26,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token','login_code', 'code_expires_at'
+        'password', 'remember_token','login_code', 'code_expires_at','google2fa_secret'
     ];
 }
